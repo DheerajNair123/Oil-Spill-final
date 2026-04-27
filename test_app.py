@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 from app import create_app
-from models import db, User, Prediction
+from models import db, User, Prediction, Alert
 
 @pytest.fixture
 def app():
@@ -138,6 +138,61 @@ class TestAPIs:
         """Test that API predict requires authentication"""
         response = client.post('/api/predict')
         assert response.status_code == 401
+
+
+class TestAlertStatusLock:
+    """Ensure resolved alerts are immutable"""
+
+    def test_resolved_alert_cannot_change_status(self, client, app):
+        """Resolved alerts should not transition to another status"""
+        with app.app_context():
+            user = User(username='cguser', email='cg@example.com', role='coast_guard')
+            user.set_password('password123')
+            db.session.add(user)
+            db.session.flush()
+
+            prediction = Prediction(
+                user_id=user.id,
+                image_filename='sample.jpg',
+                image_path='uploads/sample.jpg',
+                prediction_label='Oil Spill',
+                confidence_score=0.91,
+                raw_prediction_value=0.91,
+                processing_time=0.1
+            )
+            db.session.add(prediction)
+            db.session.flush()
+
+            alert = Alert(
+                prediction_id=prediction.id,
+                location_label='Test Zone',
+                severity='high',
+                status='Resolved'
+            )
+            db.session.add(alert)
+            db.session.commit()
+            alert_id = alert.id
+
+        client.post('/login', data={
+            'email': 'cg@example.com',
+            'password': 'password123'
+        })
+
+        response = client.post(
+            f'/api/alerts/{alert_id}/status',
+            json={'status': 'In Progress'}
+        )
+        assert response.status_code == 409
+
+        response = client.post(
+            f'/api/alerts/{alert_id}/acknowledge',
+            json={'notes': 'Trying to acknowledge again'}
+        )
+        assert response.status_code == 409
+
+        with app.app_context():
+            persisted_alert = Alert.query.get(alert_id)
+            assert persisted_alert.status == 'Resolved'
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])

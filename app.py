@@ -569,6 +569,9 @@ def create_app(config_name='development'):
         if not new_status:
             return jsonify({'error': 'status is required'}), 400
 
+        if alert.status == 'Resolved' and new_status != 'Resolved':
+            return jsonify({'error': 'Resolved alerts cannot be updated'}), 409
+
         alert.status = new_status
         if new_status == 'Acknowledged' and not alert.acknowledged_at:
             alert.acknowledged_at = datetime.utcnow()
@@ -591,6 +594,8 @@ def create_app(config_name='development'):
     @role_required('admin', 'coast_guard', api=True)
     def api_acknowledge_alert(alert_id):
         alert = Alert.query.get_or_404(alert_id)
+        if alert.status == 'Resolved':
+            return jsonify({'error': 'Resolved alerts cannot be updated'}), 409
         alert.status = 'Acknowledged'
         if not alert.acknowledged_at:
             alert.acknowledged_at = datetime.utcnow()
@@ -1346,9 +1351,10 @@ def get_dashboard_template():
                                         <td><span class="badge bg-warning text-dark">{{ alert.severity }}</span></td>
                                         <td><span class="badge bg-info text-dark">{{ alert.status }}</span></td>
                                         <td>
-                                            <button class="btn btn-sm btn-success" onclick="updateAlert('{{ alert.id }}', 'Acknowledged')">Acknowledge</button>
-                                            <button class="btn btn-sm btn-primary" onclick="updateAlert('{{ alert.id }}', 'In Progress')">In Progress</button>
-                                            <button class="btn btn-sm btn-danger" onclick="updateAlert('{{ alert.id }}', 'Resolved')">Resolved</button>
+                                            {% set is_resolved = alert.status == 'Resolved' %}
+                                            <button class="btn btn-sm btn-success" onclick="updateAlert('{{ alert.id }}', 'Acknowledged')" {% if is_resolved %}disabled{% endif %}>Acknowledge</button>
+                                            <button class="btn btn-sm btn-primary" onclick="updateAlert('{{ alert.id }}', 'In Progress')" {% if is_resolved %}disabled{% endif %}>In Progress</button>
+                                            <button class="btn btn-sm btn-danger" onclick="updateAlert('{{ alert.id }}', 'Resolved')" {% if is_resolved %}disabled{% endif %}>Resolved</button>
                                         </td>
                                     </tr>
                                     {% endfor %}
