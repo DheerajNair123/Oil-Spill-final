@@ -1,0 +1,18 @@
+coastguard@gmail.com
+Coast@123
+
+[('cg_officer1','officer1@coastguard.local','coast_guard','Coast@123'),('manager1','manager1@oilops.local','admin','Manager@123')];\n    out=[];\n  
+
+
+Coast Guard officer
+Email: officer1@coastguard.local
+Username: cg_officer1
+Password: Coast@123
+Role: coast_guard
+
+
+Manager
+Email: manager1@oilops.local
+Username: manager1
+Password: Manager@123
+Role: admin
