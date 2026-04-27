@@ -1940,7 +1940,7 @@ def get_admin_template():
         /* Stat Card Styling */
         .stat-card {
             background: rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
+            border-radius: 30px;
             padding: 30px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -2811,12 +2811,11 @@ def get_users_management_template():
         .table {
             margin-bottom: 0;
         }
-
         .table thead th {
             background: rgba(102, 126, 234, 0.15);
             border: none;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            color: var(--success-color);
+            border-bottom: 2px solid rgba(37, 150, 190, 1);
+            color: rgba(37, 150, 190, 1);
             font-weight: 700;
             text-transform: uppercase;
             font-size: 0.85rem;
@@ -2825,18 +2824,19 @@ def get_users_management_template():
         }
 
         .table tbody td {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(37, 150, 190);
+            background: rgba(177, 205, 165, 0.8) ;
             padding: 18px 15px;
-            color: rgba(255, 255, 255, 0.9);
+            color: black;
             font-size: 0.95rem;
         }
 
         .table tbody tr {
             transition: all 0.3s ease;
+            background-color: rgba(37, 150, 190, 1)
         }
 
         .table tbody tr:hover {
-            background: rgba(102, 126, 234, 0.1);
             transform: translateX(5px);
         }
 
@@ -2874,8 +2874,8 @@ def get_users_management_template():
 
         .badge-active {
             background: rgba(0, 184, 148, 0.3);
-            color: var(--success-color);
-            border: 1px solid rgba(0, 184, 148, 0.5);
+            color: rgba(27, 15, 53, 0.8);
+            border: 1px solid rgba(18, 10, 37, 1);
         }
 
         .badge-inactive {
@@ -3019,7 +3019,7 @@ def get_users_management_template():
             </div>
             
             {% if not users.items %}
-            <div style="text-align: center; padding: 60px 20px; color: rgba(255, 255, 255, 0.5);">
+            <div style="text-align: center; padding: 60px 20px; color: rgba(37, 150, 190, 1);">
                 <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
                 <p>No users found.</p>
             </div>
