@@ -1326,44 +1326,46 @@ def get_dashboard_template():
             <div class="col-12">
                 <div class="stat-card">
                     <h5 class="mb-3">Live Alerts</h5>
-                    {% if alerts %}
-                        <div class="table-responsive">
-                            <table class="table table-dark table-striped align-middle mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Time</th>
-                                        <th>Location</th>
-                                        <th>Severity</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for alert in alerts %}
-                                    <tr>
-                                        <td>{{ alert.detection_time.strftime('%Y-%m-%d %H:%M') if alert.detection_time else '-' }}</td>
-                                        <td>
-                                            {{ alert.location_label or 'Unknown' }}
-                                            {% if alert.latitude is not none and alert.longitude is not none %}
-                                                <br><small><a href="https://www.openstreetmap.org/?mlat={{ alert.latitude }}&mlon={{ alert.longitude }}#map=12/{{ alert.latitude }}/{{ alert.longitude }}" target="_blank">View map</a></small>
-                                            {% endif %}
-                                        </td>
-                                        <td><span class="badge bg-warning text-dark">{{ alert.severity }}</span></td>
-                                        <td><span class="badge bg-info text-dark">{{ alert.status }}</span></td>
-                                        <td>
-                                            {% set is_resolved = alert.status == 'Resolved' %}
-                                            <button class="btn btn-sm btn-success" onclick="updateAlert('{{ alert.id }}', 'Acknowledged')" {% if is_resolved %}disabled{% endif %}>Acknowledge</button>
-                                            <button class="btn btn-sm btn-primary" onclick="updateAlert('{{ alert.id }}', 'In Progress')" {% if is_resolved %}disabled{% endif %}>In Progress</button>
-                                            <button class="btn btn-sm btn-danger" onclick="updateAlert('{{ alert.id }}', 'Resolved')" {% if is_resolved %}disabled{% endif %}>Resolved</button>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p class="text-muted mb-0">No alerts have been generated yet.</p>
-                    {% endif %}
+                    <div id="liveAlertsContainer">
+                        {% if alerts %}
+                            <div class="table-responsive">
+                                <table class="table table-dark table-striped align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Location</th>
+                                            <th>Severity</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for alert in alerts %}
+                                        <tr>
+                                            <td>{{ alert.detection_time.strftime('%Y-%m-%d %H:%M') if alert.detection_time else '-' }}</td>
+                                            <td>
+                                                {{ alert.location_label or 'Unknown' }}
+                                                {% if alert.latitude is not none and alert.longitude is not none %}
+                                                    <br><small><a href="https://www.openstreetmap.org/?mlat={{ alert.latitude }}&mlon={{ alert.longitude }}#map=12/{{ alert.latitude }}/{{ alert.longitude }}" target="_blank">View map</a></small>
+                                                {% endif %}
+                                            </td>
+                                            <td><span class="badge bg-warning text-dark">{{ alert.severity }}</span></td>
+                                            <td><span class="badge bg-info text-dark">{{ alert.status }}</span></td>
+                                            <td>
+                                                {% set is_resolved = alert.status == 'Resolved' %}
+                                                <button class="btn btn-sm btn-success" onclick="updateAlert('{{ alert.id }}', 'Acknowledged')" {% if is_resolved %}disabled{% endif %}>Acknowledge</button>
+                                                <button class="btn btn-sm btn-primary" onclick="updateAlert('{{ alert.id }}', 'In Progress')" {% if is_resolved %}disabled{% endif %}>In Progress</button>
+                                                <button class="btn btn-sm btn-danger" onclick="updateAlert('{{ alert.id }}', 'Resolved')" {% if is_resolved %}disabled{% endif %}>Resolved</button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">No alerts have been generated yet.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -1389,7 +1391,7 @@ def get_dashboard_template():
             <div class="col-md-6">
                 <div class="stat-card">
                     <h5>Operational Status</h5>
-                    <p><strong>Open Alerts:</strong> {{ open_alerts|length if open_alerts else 0 }}</p>
+                    <p><strong>Open Alerts:</strong> <span id="openAlertsCount">{{ open_alerts|length if open_alerts else 0 }}</span></p>
                     <p><strong>Current Role:</strong> {{ current_role|replace('_', ' ')|title }}</p>
                     <p class="text-muted mb-0">Use the status buttons to coordinate response directly from the dashboard.</p>
                 </div>
@@ -1411,13 +1413,139 @@ def get_dashboard_template():
         };
         Plotly.newPlot('distributionChart', data, layout, {responsive: true});
 
+        const alertRefreshIntervalMs = 10000;
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatAlertTime(detectionTime) {
+            if (!detectionTime) {
+                return '-';
+            }
+
+            const parsed = new Date(detectionTime);
+            if (Number.isNaN(parsed.getTime())) {
+                return '-';
+            }
+
+            const year = parsed.getFullYear();
+            const month = String(parsed.getMonth() + 1).padStart(2, '0');
+            const day = String(parsed.getDate()).padStart(2, '0');
+            const hours = String(parsed.getHours()).padStart(2, '0');
+            const minutes = String(parsed.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+
+        function buildLocationHtml(alert) {
+            const label = escapeHtml(alert.location_label || 'Unknown');
+            if (alert.latitude === null || alert.latitude === undefined || alert.longitude === null || alert.longitude === undefined) {
+                return label;
+            }
+            const lat = encodeURIComponent(alert.latitude);
+            const lon = encodeURIComponent(alert.longitude);
+            return `${label}<br><small><a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=12/${lat}/${lon}" target="_blank">View map</a></small>`;
+        }
+
+        function renderAlerts(alerts) {
+            const container = document.getElementById('liveAlertsContainer');
+            const openAlertsNode = document.getElementById('openAlertsCount');
+            if (!container) {
+                return;
+            }
+
+            if (!alerts || alerts.length === 0) {
+                container.innerHTML = '<p class="text-muted mb-0">No alerts have been generated yet.</p>';
+                if (openAlertsNode) {
+                    openAlertsNode.textContent = '0';
+                }
+                return;
+            }
+
+            const rows = alerts.map((alert) => {
+                const isResolved = alert.status === 'Resolved';
+                return `
+                    <tr>
+                        <td>${formatAlertTime(alert.detection_time)}</td>
+                        <td>${buildLocationHtml(alert)}</td>
+                        <td><span class="badge bg-warning text-dark">${escapeHtml(alert.severity || 'medium')}</span></td>
+                        <td><span class="badge bg-info text-dark">${escapeHtml(alert.status || 'New')}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-success" onclick="updateAlert('${escapeHtml(alert.id)}', 'Acknowledged')" ${isResolved ? 'disabled' : ''}>Acknowledge</button>
+                            <button class="btn btn-sm btn-primary" onclick="updateAlert('${escapeHtml(alert.id)}', 'In Progress')" ${isResolved ? 'disabled' : ''}>In Progress</button>
+                            <button class="btn btn-sm btn-danger" onclick="updateAlert('${escapeHtml(alert.id)}', 'Resolved')" ${isResolved ? 'disabled' : ''}>Resolved</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Location</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            `;
+
+            if (openAlertsNode) {
+                const openAlertCount = alerts.filter((alert) => alert.status !== 'Resolved' && alert.status !== 'Closed').length;
+                openAlertsNode.textContent = String(openAlertCount);
+            }
+        }
+
+        function fetchLiveAlerts() {
+            fetch('/api/alerts')
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch live alerts');
+                    }
+                    return response.json();
+                })
+                .then((payload) => {
+                    renderAlerts(payload.alerts || []);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+
         function updateAlert(alertId, status) {
             fetch('/api/alerts/' + alertId + '/status', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({status: status})
-            }).then(() => window.location.reload());
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update alert status');
+                    }
+                    return response.json();
+                })
+                .then(() => fetchLiveAlerts())
+                .catch((error) => {
+                    console.error(error);
+                });
         }
+
+        window.setInterval(fetchLiveAlerts, alertRefreshIntervalMs);
+        fetchLiveAlerts();
     </script>
 </body>
 </html>
@@ -1511,7 +1639,7 @@ def get_history_template():
                             </td>
                             <td>{{ "%.2f"|format(pred.confidence_score * 100) }}%</td>
                             <td>
-                                {% if pred.feedback is None %}
+                                {% if pred.feedback is none %}
                                     <span class="text-warning">⏳ Pending</span>
                                 {% elif pred.feedback %}
                                     <span class="text-success">✓ Correct</span>
@@ -2241,11 +2369,11 @@ def get_admin_template():
                     </h3>
                     <div class="stat-detail">
                         <span class="stat-detail-label"><i class="fas fa-exclamation-circle"></i> Total Alerts</span>
-                        <span class="stat-detail-value">{{ alert_stats.total_alerts }}</span>
+                        <span class="stat-detail-value" id="adminTotalAlertsCount">{{ alert_stats.total_alerts }}</span>
                     </div>
                     <div class="stat-detail">
                         <span class="stat-detail-label"><i class="fas fa-lock-open"></i> Open Alerts</span>
-                        <span class="stat-detail-value">{{ alert_stats.open_alerts }}</span>
+                        <span class="stat-detail-value" id="adminOpenAlertsCount">{{ alert_stats.open_alerts }}</span>
                     </div>
                     <div class="stat-detail">
                         <span class="stat-detail-label"><i class="fas fa-hourglass-half"></i> Avg Response Time</span>
@@ -2254,9 +2382,9 @@ def get_admin_template():
                     <div class="stat-detail">
                         <span class="stat-detail-label"><i class="fas fa-layer-group"></i> Severity Mix</span>
                         <span class="stat-detail-value">
-                            <span class="badge-severity-low">L{{ alert_stats.severity_counts.low }}</span>
-                            <span class="badge-severity-medium">M{{ alert_stats.severity_counts.medium }}</span>
-                            <span class="badge-severity-high">H{{ alert_stats.severity_counts.high }}</span>
+                            <span class="badge-severity-low">L<span id="adminSeverityLowCount">{{ alert_stats.severity_counts.low }}</span></span>
+                            <span class="badge-severity-medium">M<span id="adminSeverityMediumCount">{{ alert_stats.severity_counts.medium }}</span></span>
+                            <span class="badge-severity-high">H<span id="adminSeverityHighCount">{{ alert_stats.severity_counts.high }}</span></span>
                         </span>
                     </div>
                 </div>
@@ -2270,70 +2398,71 @@ def get_admin_template():
             <h3 class="section-title">
                 <i class="fas fa-fire"></i> Recent Incidents
             </h3>
+            <div id="recentIncidentsContainer">
+                {% if alerts %}
+                    <div class="row">
+                        {% for alert in alerts %}
+                            <div class="col-md-6 mb-4">
+                                <div class="incident-card">
 
-            {% if alerts %}
-                <div class="row">
-                    {% for alert in alerts %}
-                        <div class="col-md-6 mb-4">
-                            <div class="incident-card">
+                                    <!-- Header -->
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            {{ alert.location_label or 'Unknown' }}
+                                        </h5>
 
-                                <!-- Header -->
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        {{ alert.location_label or 'Unknown' }}
-                                    </h5>
+                                        <span class="status-badge">
+                                            {{ alert.status }}
+                                        </span>
+                                    </div>
 
-                                    <span class="status-badge">
-                                        {{ alert.status }}
-                                    </span>
-                                </div>
+                                    <!-- Time -->
+                                    <p class="text-muted mb-3">
+                                        <i class="fas fa-clock"></i>
+                                        {{ alert.detection_time.strftime('%Y-%m-%d %H:%M') if alert.detection_time else '-' }}
+                                    </p>
 
-                                <!-- Time -->
-                                <p class="text-muted mb-3">
-                                    <i class="fas fa-clock"></i>
-                                    {{ alert.detection_time.strftime('%Y-%m-%d %H:%M') if alert.detection_time else '-' }}
-                                </p>
+                                    <!-- Severity + Action -->
+                                    <div class="d-flex justify-content-between align-items-center">
 
-                                <!-- Severity + Action -->
-                                <div class="d-flex justify-content-between align-items-center">
+                                        {% if alert.severity == 'high' %}
+                                            <span class="badge-severity-high">HIGH</span>
+                                        {% elif alert.severity == 'medium' %}
+                                            <span class="badge-severity-medium">MEDIUM</span>
+                                        {% else %}
+                                            <span class="badge-severity-low">LOW</span>
+                                        {% endif %}
 
-                                    {% if alert.severity == 'high' %}
-                                        <span class="badge-severity-high">HIGH</span>
-                                    {% elif alert.severity == 'medium' %}
-                                        <span class="badge-severity-medium">MEDIUM</span>
-                                    {% else %}
-                                        <span class="badge-severity-low">LOW</span>
+                                        <button class="btn btn-sm btn-light"
+                                                onclick="viewAlert('{{ alert.id }}')">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </div>
+
+                                    <!-- Optional Map Link -->
+                                    {% if alert.latitude and alert.longitude %}
+                                        <div class="mt-3">
+                                            <a href="https://www.openstreetmap.org/?mlat={{ alert.latitude }}&mlon={{ alert.longitude }}"
+                                               target="_blank"
+                                               class="map-link">
+                                                📍 View on Map
+                                            </a>
+                                        </div>
                                     {% endif %}
 
-                                    <button class="btn btn-sm btn-light"
-                                            onclick="viewAlert('{{ alert.id }}')">
-                                        <i class="fas fa-eye"></i> View
-                                    </button>
                                 </div>
-
-                                <!-- Optional Map Link -->
-                                {% if alert.latitude and alert.longitude %}
-                                    <div class="mt-3">
-                                        <a href="https://www.openstreetmap.org/?mlat={{ alert.latitude }}&mlon={{ alert.longitude }}"
-                                           target="_blank"
-                                           class="map-link">
-                                            📍 View on Map
-                                        </a>
-                                    </div>
-                                {% endif %}
-
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                        {% endfor %}
+                    </div>
 
-            {% else %}
-                <div class="no-data text-center">
-                    <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
-                    <p>No incidents logged yet.</p>
-                </div>
-            {% endif %}
+                {% else %}
+                    <div class="no-data text-center">
+                        <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
+                        <p>No incidents logged yet.</p>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 
@@ -2371,6 +2500,207 @@ def get_admin_template():
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const adminAlertRefreshIntervalMs = 10000;
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatAlertTime(detectionTime) {
+            if (!detectionTime) {
+                return '-';
+            }
+
+            const parsed = new Date(detectionTime);
+            if (Number.isNaN(parsed.getTime())) {
+                return '-';
+            }
+
+            const year = parsed.getFullYear();
+            const month = String(parsed.getMonth() + 1).padStart(2, '0');
+            const day = String(parsed.getDate()).padStart(2, '0');
+            const hours = String(parsed.getHours()).padStart(2, '0');
+            const minutes = String(parsed.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+
+        function severityClassAndLabel(severity) {
+            const normalized = (severity || '').toLowerCase();
+            if (normalized === 'high') {
+                return { className: 'badge-severity-high', label: 'HIGH' };
+            }
+            if (normalized === 'medium') {
+                return { className: 'badge-severity-medium', label: 'MEDIUM' };
+            }
+            return { className: 'badge-severity-low', label: 'LOW' };
+        }
+
+        function renderRecentIncidents(alerts) {
+            const container = document.getElementById('recentIncidentsContainer');
+            if (!container) {
+                return;
+            }
+
+            if (!alerts || alerts.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data text-center">
+                        <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
+                        <p>No incidents logged yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const cards = alerts.slice(0, 6).map((alert) => {
+                const severityMeta = severityClassAndLabel(alert.severity);
+                const locationLabel = escapeHtml(alert.location_label || 'Unknown');
+                const mapLink = (alert.latitude !== null && alert.latitude !== undefined && alert.longitude !== null && alert.longitude !== undefined)
+                    ? `<div class="mt-3"><a href="https://www.openstreetmap.org/?mlat=${encodeURIComponent(alert.latitude)}&mlon=${encodeURIComponent(alert.longitude)}" target="_blank" class="map-link">📍 View on Map</a></div>`
+                    : '';
+
+                return `
+                    <div class="col-md-6 mb-4">
+                        <div class="incident-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    ${locationLabel}
+                                </h5>
+                                <span class="status-badge">${escapeHtml(alert.status || 'New')}</span>
+                            </div>
+                            <p class="text-muted mb-3">
+                                <i class="fas fa-clock"></i>
+                                ${formatAlertTime(alert.detection_time)}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="${severityMeta.className}">${severityMeta.label}</span>
+                                <button class="btn btn-sm btn-light" onclick="viewAlert('${escapeHtml(alert.id)}')">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                            </div>
+                            ${mapLink}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `<div class="row">${cards}</div>`;
+        }
+
+        function updateAdminAlertAnalytics(alerts) {
+            const totalNode = document.getElementById('adminTotalAlertsCount');
+            const openNode = document.getElementById('adminOpenAlertsCount');
+            const lowNode = document.getElementById('adminSeverityLowCount');
+            const mediumNode = document.getElementById('adminSeverityMediumCount');
+            const highNode = document.getElementById('adminSeverityHighCount');
+
+            const total = alerts.length;
+            const open = alerts.filter((alert) => alert.status !== 'Resolved' && alert.status !== 'Closed').length;
+
+            let low = 0;
+            let medium = 0;
+            let high = 0;
+            alerts.forEach((alert) => {
+                const severity = (alert.severity || '').toLowerCase();
+                if (severity === 'high') {
+                    high += 1;
+                } else if (severity === 'medium') {
+                    medium += 1;
+                } else {
+                    low += 1;
+                }
+            });
+
+            if (totalNode) {
+                totalNode.textContent = String(total);
+            }
+            if (openNode) {
+                openNode.textContent = String(open);
+            }
+            if (lowNode) {
+                lowNode.textContent = String(low);
+            }
+            if (mediumNode) {
+                mediumNode.textContent = String(medium);
+            }
+            if (highNode) {
+                highNode.textContent = String(high);
+            }
+        }
+
+        function fetchAdminAlerts() {
+            fetch('/api/alerts')
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch alerts');
+                    }
+                    return response.json();
+                })
+                .then((payload) => {
+                    const alerts = payload.alerts || [];
+                    updateAdminAlertAnalytics(alerts);
+                    renderRecentIncidents(alerts);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+
+        function viewAlert(alertId) {
+            fetch('/api/alerts/' + alertId)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load alert details');
+                    }
+                    return response.json();
+                })
+                .then((payload) => {
+                    const alert = payload.alert || {};
+                    const details = [
+                        `Alert ID: ${alert.id || '-'}`,
+                        `Status: ${alert.status || '-'}`,
+                        `Severity: ${alert.severity || '-'}`,
+                        `Location: ${alert.location_label || 'Unknown'}`,
+                        `Detected: ${formatAlertTime(alert.detection_time)}`,
+                    ];
+                    window.alert(details.join('\\n'));
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+        function refreshAdminDashboard() {
+        fetch('/api/alerts')
+        .then(res => res.json())
+        .then(data => {
+            const alerts = data.alerts || [];
+
+            // ✅ Update stats
+            document.getElementById('totalAlerts').innerText = alerts.length;
+
+            const open = alerts.filter(a => a.status !== 'Resolved' && a.status !== 'Closed').length;
+            document.getElementById('openAlerts').innerText = open;
+
+            // ✅ Update table
+            renderAlerts(alerts);
+        })
+        .catch(err => console.error(err));
+}
+
+
+
+        window.setInterval(fetchAdminAlerts, adminAlertRefreshIntervalMs);
+        fetchAdminAlerts();
+    </script>
 </body>
 </html>
     '''
