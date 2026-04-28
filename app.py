@@ -1587,12 +1587,17 @@ def get_history_template():
             margin: 0;
         }
         th {
+            border-radius: 5px; 
+            background-color: rgba(25, 48, 56) !important;        
             border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            color: #00b894;
+            color: white !important;
         }
         td {
+            background: rgba(37, 150, 190, 0.15) !important;  
             padding: 15px !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid black;
+            border-bottom: 1px solid black;
+            color: white !important;
         }
     </style>
 </head>
@@ -2815,7 +2820,7 @@ def get_users_management_template():
             background: rgba(102, 126, 234, 0.15);
             border: none;
             border-bottom: 2px solid rgba(37, 150, 190, 1);
-            color: rgba(37, 150, 190, 1);
+            color: white;
             font-weight: 700;
             text-transform: uppercase;
             font-size: 0.85rem;
@@ -2824,16 +2829,16 @@ def get_users_management_template():
         }
 
         .table tbody td {
-            border-bottom: 1px solid rgba(37, 150, 190);
-            background: rgba(177, 205, 165, 0.8) ;
+            border-bottom: 1px solid grey;
+            background: rgba(37, 150, 190, 0.15) !important ;
             padding: 18px 15px;
-            color: black;
+            color: white;
             font-size: 0.95rem;
         }
 
         .table tbody tr {
             transition: all 0.3s ease;
-            background-color: rgba(37, 150, 190, 1)
+            background-color: rgba(102, 126, 234, 0.15);
         }
 
         .table tbody tr:hover {
@@ -2852,13 +2857,13 @@ def get_users_management_template():
 
         .badge-admin {
             background: rgba(231, 76, 60, 0.3);
-            color: #e74c3c;
+            color: rgba(231, 76, 60, 1);
             border: 1px solid rgba(231, 76, 60, 0.5);
         }
 
         .badge-coast-guard {
-            background: rgba(52, 152, 219, 0.3);
-            color: #3498db;
+            background: rgba(197, 217, 151, 0.45);
+            color: green;
             border: 1px solid rgba(52, 152, 219, 0.5);
         }
 
