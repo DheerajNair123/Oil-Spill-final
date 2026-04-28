@@ -1645,7 +1645,7 @@ def get_history_template():
                             <td>{{ "%.2f"|format(pred.confidence_score * 100) }}%</td>
                             <td>
                                 {% if pred.feedback is none %}
-                                    <span class="text-warning">⏳ Pending</span>
+                                    <span class="text-warning">None Provided</span>
                                 {% elif pred.feedback %}
                                     <span class="text-success">✓ Correct</span>
                                 {% else %}

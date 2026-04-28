@@ -1,192 +1,182 @@
-# Oil Spill Detection API
+# Oil Spill Detector System
 
-A FastAPI-based web service for detecting oil spills in satellite imagery using deep learning.
+A Flask-based web application and API for detecting oil spills in satellite imagery using a TensorFlow model. The app includes user login, role-based dashboards, prediction history, feedback capture, alert management, and a JSON API for external integrations.
 
-## What This Code Does
+## What It Does
 
-The application accepts satellite images and uses a trained TensorFlow neural network to classify whether the image contains an oil spill or not. It returns a confidence score along with the classification.
+The application lets a user upload a satellite image, runs it through the trained model, and stores the prediction in the database. If an oil spill is detected, the system creates an alert record that can be reviewed and managed from the dashboard or API.
 
-**Flow:**
-1. User uploads an image via HTTP POST
-2. Image is validated (format, size)
-3. Image is preprocessed (resized to 224×224, normalized)
-4. Model makes prediction
-5. API returns classification and confidence score
+## Features
 
-## Installation & Setup
+- User authentication with Flask-Login
+- Role-based access for admin, coast guard, and regular/demo users
+- Single-image prediction from the web UI
+- Prediction history with feedback status tracking
+- Alert creation, acknowledgement, and status updates when oil spills are detected
+- Admin dashboard with user management and summary metrics
+- Coast guard dashboard for operational review
+- REST API with bearer API key support
+- Swagger documentation at `/apidocs/`
+- Image serving for uploaded files
 
-### 1. Clone/Navigate to Project
+## Tech Stack
+
+- Flask
+- Flask-Login
+- Flask-SQLAlchemy
+- Flask-CORS
+- Flasgger / Swagger
+- TensorFlow / Keras
+
+## Installation
+
+### 1. Clone or open the project
 ```bash
-cd /path/to/oil_spill/project
+cd /path/to/MPTRIAL
 ```
 
-### 2. Create Virtual Environment (Recommended)
+### 2. Create a virtual environment
 ```bash
 python -m venv venv
-source venv/Scripts/activate  # Windows: venv\Scripts\activate
+venv\Scripts\activate
 ```
 
-### 3. Install Dependencies
+### 3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Prepare Your Model
-- Place your trained model file as `model.h5` in the project directory
-- OR set the `MODEL_PATH` environment variable:
+### 4. Make sure the model is available
+
+Place your trained model at `model.h5`, or set `MODEL_PATH` to point to a different file.
+
+## Configuration
+
+The main settings live in `config.py` and can be overridden with environment variables.
+
+- `SECRET_KEY`
+- `DATABASE_URL`
+- `UPLOAD_FOLDER`
+- `MAX_CONTENT_LENGTH`
+- `MODEL_PATH`
+- `PREDICTION_THRESHOLD`
+- `FLASK_ENV`
+
+Default values are provided for local development, including a SQLite database at `sqlite:///oil_spill.db`.
+
+## Running the App
+
+### Preferred startup command
 ```bash
-export MODEL_PATH=/path/to/your/model.h5  # Linux/Mac
-set MODEL_PATH=C:\path\to\model.h5         # Windows
+python run.py
 ```
 
-## Running the API
+This initializes the database, loads the model, and starts the server at `http://localhost:5000`.
 
-### Start the Server
+### Alternate startup command
 ```bash
-uvicorn oil_spill:app --reload
+python app.py
 ```
 
-The API will be available at: **http://localhost:8000**
+Use this if you want the application to start directly from the Flask app module.
 
-### Interactive API Documentation
-Visit: **http://localhost:8000/docs** (Swagger UI)
-Or: **http://localhost:8000/redoc** (ReDoc)
+### API documentation
 
-## Testing
+Open `http://localhost:5000/apidocs/` for the Swagger UI.
 
-### Using Swagger UI (Easiest)
-1. Go to http://localhost:8000/docs
-2. Click on the `/predict/` endpoint
-3. Click "Try it out"
-4. Upload an image
-5. Click "Execute"
+## Default Accounts
 
-### Using curl
-```bash
-curl -X POST "http://localhost:8000/predict/" \
-  -F "file=@satellite_image.jpg"
-```
+The startup script prints demo credentials that are useful for local testing:
 
-### Using Python
-```bash
-python test_api.py
-```
+- Admin: `admin@example.com` / `admin123`
+- Coast Guard: `coastguard@example.com` / `coast123`
+- Demo: `demo@example.com` / `demo123`
 
-### Example Response
-```json
-{
-  "label": "Oil Spill",
-  "confidence": 0.87,
-  "threshold": 0.5
-}
-```
+Change these before using the app in a real environment.
+
+## Main Web Routes
+
+- `GET /` - landing page / home
+- `GET, POST /register` - admin-controlled registration once an admin exists
+- `GET, POST /login` - web login
+- `POST /api/login` - API/session login
+- `POST /api/logout` - API logout
+- `GET /dashboard` - role-based dashboard
+- `GET /admin` - admin dashboard
+- `GET, POST /admin/users/new` - create users from the admin area
+- `GET /admin/users` - user management list
+- `GET /history` - prediction history
+- `POST /feedback/<prediction_id>` - submit prediction feedback
+- `GET /profile` - profile page
+- `GET, POST /profile/update` - update profile
+- `GET /uploads/<filename>` - access uploaded files
 
 ## API Endpoints
 
-### 1. Health Check
-**GET** `/`
-- Returns: `{"status": "Oil Spill Detection API is running"}`
+### Prediction
 
-### 2. Make Prediction
-**POST** `/predict/`
-- **Input:** Image file (JPEG/PNG, max 5MB)
-- **Output:**
-  ```json
-  {
-    "label": "Oil Spill" or "Not Oil Spill",
-    "confidence": 0.0-1.0,
-    "threshold": 0.5
-  }
-  ```
-- **Error Codes:**
-  - `400`: Invalid file type or format
-  - `413`: File too large (>5MB)
-  - `500`: Server error
+- `POST /api/predict`
+- Requires a bearer API key for API usage
+- Accepts an uploaded image and returns prediction details
 
-## Key Improvements Made
+### Metrics
 
-### 1. **Error Handling**
-- File type validation (JPEG/PNG only)
-- File size limits (5MB max)
-- Graceful error messages
-- Logging of all errors
+- `GET /api/accuracy`
+- `GET /api/model-stats`
 
-### 2. **Image Preprocessing**
-- Handles different image formats (converts RGBA/grayscale to RGB)
-- Robust error handling for corrupted images
-- Normalized pixel values (0-1 range)
+### Alerts
 
-### 3. **Production Ready**
-- Proper logging system
-- Health check endpoint
-- Model loaded at startup (not per request)
-- Type hints for better code clarity
-- API documentation
+- `GET /api/alerts`
+- `GET /api/alerts/<alert_id>`
+- `POST /api/alerts/<alert_id>/status`
+- `POST /api/alerts/<alert_id>/acknowledge`
+- `GET /api/alerts/<alert_id>/actions`
 
-### 4. **Better Configuration**
-- Model path configurable via environment variable
-- No hardcoded paths
-- Support for .env files
+### User management API
 
-### 5. **Security**
-- File size limits prevent DOS attacks
-- File type validation prevents malicious uploads
-- Verbose error messages disabled in production
+- `POST /api/users`
 
-## Performance Tips
+## Testing
 
-1. **GPU Support**: Ensure TensorFlow can access GPU for faster predictions
-   ```bash
-   python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-   ```
+Run the available checks from the project root:
 
-2. **Batch Processing**: For multiple images, consider modifying to accept batch uploads
+```bash
+python test_app.py
+python test_api.py
+```
 
-3. **Caching**: Add Redis caching for repeated predictions on same images
-
-4. **Load Balancing**: Deploy multiple instances behind a load balancer for production
-
-## Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| Model not found | Check `MODEL_PATH` environment variable and file exists |
-| Port 8000 in use | Change port: `uvicorn oil_spill:app --port 8001` |
-| Image processing error | Ensure image is valid JPEG/PNG, not corrupted |
-| Slow predictions | Check GPU usage; consider model optimization |
-| 500 errors | Check logs for detailed error messages |
+If you only want a quick verification of the model pipeline, use the helper scripts in the repo such as `quick_accuracy_check.py`.
 
 ## Project Structure
-```
-oil_spill/
-├── oil_spill.py          # Main API code
-├── requirements.txt      # Dependencies
-├── .env.example         # Environment template
-├── test_api.py          # Test suite
-├── run.sh               # Startup script
-├── model.h5             # Trained model (add this)
-└── README.md            # This file
+
+```text
+MPTRIAL/
+├── app.py
+├── run.py
+├── config.py
+├── models.py
+├── forms.py
+├── utils.py
+├── test_app.py
+├── test_api.py
+├── evaluate_model.py
+├── quick_accuracy_check.py
+├── model.h5
+├── instance/
+├── uploads/
+└── README.md
 ```
 
-## Environment Variables
+## Notes
 
-Create a `.env` file:
-```
-MODEL_PATH=./model.h5
-API_HOST=0.0.0.0
-API_PORT=8000
-```
-
-## Production Deployment
-
-For production, use a production ASGI server:
-```bash
-pip install gunicorn
-gunicorn oil_spill:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
-```
+- TensorFlow is optional at import time, but predictions require a valid model.
+- Uploaded images are stored under the configured upload folder.
+- The app uses a 224x224 input size and a default prediction threshold of 0.5.
 
 ## License
+
 College Mini Project (semVII)
 
 ## Author
+
 Dheeraj
