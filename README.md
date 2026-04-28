@@ -1,34 +1,34 @@
-# Oil Spill Detector System
+# 🛢️ Oil Spill Detector System
 
 A Flask-based web application and API for detecting oil spills in satellite imagery using a TensorFlow model. The app includes user login, role-based dashboards, prediction history, feedback capture, alert management, and a JSON API for external integrations.
 
-## What It Does
+## 🔍 What It Does
 
 The application lets a user upload a satellite image, runs it through the trained model, and stores the prediction in the database. If an oil spill is detected, the system creates an alert record that can be reviewed and managed from the dashboard or API.
 
-## Features
+## ✨ Features
 
-- User authentication with Flask-Login
-- Role-based access for admin, coast guard, and regular/demo users
-- Single-image prediction from the web UI
-- Prediction history with feedback status tracking
-- Alert creation, acknowledgement, and status updates when oil spills are detected
-- Admin dashboard with user management and summary metrics
-- Coast guard dashboard for operational review
-- REST API with bearer API key support
-- Swagger documentation at `/apidocs/`
-- Image serving for uploaded files
+- 🔐 User authentication with Flask-Login
+- 👥 Role-based access for admin, coast guard, and regular/demo users
+- 🖼️ Single-image prediction from the web UI
+- 📜 Prediction history with feedback status tracking
+- 🚨 Alert creation, acknowledgement, and status updates when oil spills are detected
+- 🛠️ Admin dashboard with user management and summary metrics
+- ⚓ Coast guard dashboard for operational review
+- 🌐 REST API with bearer API key support
+- 📄 Swagger documentation at `/apidocs/`
+- 🗂️ Image serving for uploaded files
 
-## Tech Stack
+## 🧰 Tech Stack
 
-- Flask
-- Flask-Login
-- Flask-SQLAlchemy
-- Flask-CORS
-- Flasgger / Swagger
-- TensorFlow / Keras
+- 🐍 Flask
+- 🔑 Flask-Login
+- 🗄️ Flask-SQLAlchemy
+- 🌍 Flask-CORS
+- 📋 Flasgger / Swagger
+- 🤖 TensorFlow / Keras
 
-## Installation
+## 🚀 Installation
 
 ### 1. Clone or open the project
 ```bash
@@ -50,7 +50,7 @@ pip install -r requirements.txt
 
 Place your trained model at `model.h5`, or set `MODEL_PATH` to point to a different file.
 
-## Configuration
+## ⚙️ Configuration
 
 The main settings live in `config.py` and can be overridden with environment variables.
 
@@ -64,7 +64,7 @@ The main settings live in `config.py` and can be overridden with environment var
 
 Default values are provided for local development, including a SQLite database at `sqlite:///oil_spill.db`.
 
-## Running the App
+## ▶️ Running the App
 
 ### Preferred startup command
 ```bash
@@ -80,21 +80,21 @@ python app.py
 
 Use this if you want the application to start directly from the Flask app module.
 
-### API documentation
+### 📖 API documentation
 
 Open `http://localhost:5000/apidocs/` for the Swagger UI.
 
-## Default Accounts
+## 👤 Default Accounts
 
 The startup script prints demo credentials that are useful for local testing:
 
-- Admin: `admin@example.com` / `admin123`
-- Coast Guard: `coastguard@example.com` / `coast123`
-- Demo: `demo@example.com` / `demo123`
+- 👑 Admin: `admin@example.com` / `admin123`
+- ⚓ Coast Guard: `coastguard@example.com` / `coast123`
+- 🧪 Demo: `demo@example.com` / `demo123`
 
-Change these before using the app in a real environment.
+> ⚠️ Change these before using the app in a real environment.
 
-## Main Web Routes
+## 🗺️ Main Web Routes
 
 - `GET /` - landing page / home
 - `GET, POST /register` - admin-controlled registration once an admin exists
@@ -111,20 +111,20 @@ Change these before using the app in a real environment.
 - `GET, POST /profile/update` - update profile
 - `GET /uploads/<filename>` - access uploaded files
 
-## API Endpoints
+## 🔌 API Endpoints
 
-### Prediction
+### 🧠 Prediction
 
 - `POST /api/predict`
 - Requires a bearer API key for API usage
 - Accepts an uploaded image and returns prediction details
 
-### Metrics
+### 📊 Metrics
 
 - `GET /api/accuracy`
 - `GET /api/model-stats`
 
-### Alerts
+### 🚨 Alerts
 
 - `GET /api/alerts`
 - `GET /api/alerts/<alert_id>`
@@ -132,11 +132,11 @@ Change these before using the app in a real environment.
 - `POST /api/alerts/<alert_id>/acknowledge`
 - `GET /api/alerts/<alert_id>/actions`
 
-### User management API
+### 👥 User management API
 
 - `POST /api/users`
 
-## Testing
+## 🧪 Testing
 
 Run the available checks from the project root:
 
@@ -147,7 +147,7 @@ python test_api.py
 
 If you only want a quick verification of the model pipeline, use the helper scripts in the repo such as `quick_accuracy_check.py`.
 
-## Project Structure
+## 📁 Project Structure
 
 ```text
 MPTRIAL/
@@ -167,16 +167,16 @@ MPTRIAL/
 └── README.md
 ```
 
-## Notes
+## 📝 Notes
 
-- TensorFlow is optional at import time, but predictions require a valid model.
-- Uploaded images are stored under the configured upload folder.
-- The app uses a 224x224 input size and a default prediction threshold of 0.5.
+- ⚠️ TensorFlow is optional at import time, but predictions require a valid model.
+- 📂 Uploaded images are stored under the configured upload folder.
+- 📐 The app uses a 224x224 input size and a default prediction threshold of 0.5.
 
-## License
+## 📜 License
 
-College Mini Project (semVII)
+MIT 
 
-## Author
+## 👨‍💻 Author
 
 Dheeraj
