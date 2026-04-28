@@ -555,7 +555,7 @@ def create_app(config_name='development'):
     @role_required('admin', 'coast_guard', api=True)
     def api_get_alert(alert_id):
         alert = Alert.query.get_or_404(alert_id)
-        return jsonify(serialize_alert(alert))
+        return jsonify({'alert': serialize_alert(alert)})
 
     @app.route('/api/alerts/<alert_id>/status', methods=['POST'])
     @login_required
@@ -1157,12 +1157,15 @@ def get_main_template():
                 <input class="form-control mb-3" type="text" name="location_label" placeholder="Location label (optional)">
                 <div class="row g-2 mb-3">
                     <div class="col-md-6">
-                        <input class="form-control" type="number" step="any" name="latitude" placeholder="Latitude (optional)">
+                        <input class="form-control" type="number" step="0.000001" min="-90" max="90" inputmode="decimal" name="latitude" placeholder="Latitude in decimal degrees (optional)">
                     </div>
                     <div class="col-md-6">
-                        <input class="form-control" type="number" step="any" name="longitude" placeholder="Longitude (optional)">
+                        <input class="form-control" type="number" step="0.000001" min="-180" max="180" inputmode="decimal" name="longitude" placeholder="Longitude in decimal degrees (optional)">
                     </div>
                 </div>
+                <small class="text-muted d-block mb-3">
+                    Enter coordinates in decimal degrees for precise location, such as <strong>18.520430</strong> and <strong>73.856743</strong>. Use up to 6+ decimal places for better accuracy. Positive values are north/east; negative values are south/west.
+                </small>
                 <button type="submit" class="btn btn-custom">
                     <i class="fa-solid fa-magnifying-glass"></i> Detect
                 </button>
@@ -1334,7 +1337,7 @@ def get_dashboard_template():
                                         <tr>
                                             <th>Time</th>
                                             <th>Location</th>
-                                            <th>Severity</th>
+                                            <th>Alert ID</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -1346,10 +1349,10 @@ def get_dashboard_template():
                                             <td>
                                                 {{ alert.location_label or 'Unknown' }}
                                                 {% if alert.latitude is not none and alert.longitude is not none %}
-                                                    <br><small><a href="https://www.openstreetmap.org/?mlat={{ alert.latitude }}&mlon={{ alert.longitude }}#map=12/{{ alert.latitude }}/{{ alert.longitude }}" target="_blank">View map</a></small>
+                                                    <br><small><a href="https://www.google.com/maps/search/?api=1&query={{ alert.latitude }},{{ alert.longitude }}" target="_blank" rel="noopener noreferrer">View map</a></small>
                                                 {% endif %}
                                             </td>
-                                            <td><span class="badge bg-warning text-dark">{{ alert.severity }}</span></td>
+                                            <td><span class="font-monospace small">{{ alert.id }}</span></td>
                                             <td><span class="badge bg-info text-dark">{{ alert.status }}</span></td>
                                             <td>
                                                 {% set is_resolved = alert.status == 'Resolved' %}
@@ -1452,7 +1455,7 @@ def get_dashboard_template():
             }
             const lat = encodeURIComponent(alert.latitude);
             const lon = encodeURIComponent(alert.longitude);
-            return `${label}<br><small><a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=12/${lat}/${lon}" target="_blank">View map</a></small>`;
+            return `${label}<br><small><a href="https://www.google.com/maps/search/?api=1&query=${lat},${lon}" target="_blank" rel="noopener noreferrer">View map</a></small>`;
         }
 
         function renderAlerts(alerts) {
@@ -1474,9 +1477,9 @@ def get_dashboard_template():
                 const isResolved = alert.status === 'Resolved';
                 return `
                     <tr>
+                        <td><span class="font-monospace small">${escapeHtml(alert.id || '-')}</span></td>
                         <td>${formatAlertTime(alert.detection_time)}</td>
                         <td>${buildLocationHtml(alert)}</td>
-                        <td><span class="badge bg-warning text-dark">${escapeHtml(alert.severity || 'medium')}</span></td>
                         <td><span class="badge bg-info text-dark">${escapeHtml(alert.status || 'New')}</span></td>
                         <td>
                             <button class="btn btn-sm btn-success" onclick="updateAlert('${escapeHtml(alert.id)}', 'Acknowledged')" ${isResolved ? 'disabled' : ''}>Acknowledge</button>
@@ -1492,9 +1495,10 @@ def get_dashboard_template():
                     <table class="table table-dark table-striped align-middle mb-0">
                         <thead>
                             <tr>
+                                <th>Alert ID</th>
                                 <th>Time</th>
                                 <th>Location</th>
-                                <th>Severity</th>
+
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -2273,6 +2277,54 @@ def get_admin_template():
     padding: 6px 12px;
     border-radius: 10px;
 }
+
+.incident-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.incident-detail-item {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 1rem;
+}
+
+.incident-detail-label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: 0.35rem;
+}
+
+.incident-detail-value {
+    font-weight: 600;
+    color: #fff;
+    word-break: break-word;
+}
+
+.incident-detail-section {
+    margin-top: 1rem;
+}
+
+.incident-action-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.incident-map-link {
+    color: #8fd3ff;
+    text-decoration: none;
+}
+
+.incident-map-link:hover {
+    color: #b7e4ff;
+    text-decoration: underline;
+}
     </style>
 </head>
 <body>
@@ -2446,12 +2498,13 @@ def get_admin_template():
                                     </div>
 
                                     <!-- Optional Map Link -->
-                                    {% if alert.latitude and alert.longitude %}
+                                    {% if alert.latitude is not none and alert.longitude is not none %}
                                         <div class="mt-3">
-                                            <a href="https://www.openstreetmap.org/?mlat={{ alert.latitude }}&mlon={{ alert.longitude }}"
+                                            <a href="https://www.google.com/maps/search/?api=1&query={{ alert.latitude }},{{ alert.longitude }}"
                                                target="_blank"
+                                               rel="noopener noreferrer"
                                                class="map-link">
-                                                📍 View on Map
+                                                📍 View on Google Maps
                                             </a>
                                         </div>
                                     {% endif %}
@@ -2503,6 +2556,20 @@ def get_admin_template():
 </div>
 </div>
     </div>
+
+    <div class="modal fade" id="incidentDetailsModal" tabindex="-1" aria-labelledby="incidentDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content bg-dark text-white border border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="incidentDetailsModalLabel">
+                        <i class="fas fa-circle-info"></i> Incident Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="incidentDetailsModalBody"></div>
+            </div>
+        </div>
+    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -2538,6 +2605,18 @@ def get_admin_template():
             return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
 
+        function buildGoogleMapsUrl(latitude, longitude) {
+            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(latitude)},${encodeURIComponent(longitude)}`;
+        }
+
+        function formatCoordinate(value) {
+            const numericValue = Number(value);
+            if (!Number.isFinite(numericValue)) {
+                return '-';
+            }
+            return numericValue.toFixed(6);
+        }
+
         function severityClassAndLabel(severity) {
             const normalized = (severity || '').toLowerCase();
             if (normalized === 'high') {
@@ -2569,7 +2648,7 @@ def get_admin_template():
                 const severityMeta = severityClassAndLabel(alert.severity);
                 const locationLabel = escapeHtml(alert.location_label || 'Unknown');
                 const mapLink = (alert.latitude !== null && alert.latitude !== undefined && alert.longitude !== null && alert.longitude !== undefined)
-                    ? `<div class="mt-3"><a href="https://www.openstreetmap.org/?mlat=${encodeURIComponent(alert.latitude)}&mlon=${encodeURIComponent(alert.longitude)}" target="_blank" class="map-link">📍 View on Map</a></div>`
+                    ? `<div class="mt-3"><a href="${buildGoogleMapsUrl(alert.latitude, alert.longitude)}" target="_blank" rel="noopener noreferrer" class="map-link">📍 View on Google Maps</a></div>`
                     : '';
 
                 return `
@@ -2660,6 +2739,97 @@ def get_admin_template():
                 });
         }
 
+        function openIncidentDetailsModal(alert) {
+            const modalBody = document.getElementById('incidentDetailsModalBody');
+            const modalTitle = document.getElementById('incidentDetailsModalLabel');
+            const modalElement = document.getElementById('incidentDetailsModal');
+
+            if (!modalBody || !modalTitle || !modalElement) {
+                return;
+            }
+
+            const coordinatesAvailable = alert.latitude !== null && alert.latitude !== undefined && alert.longitude !== null && alert.longitude !== undefined;
+            const mapLink = coordinatesAvailable
+                ? `<a class="incident-map-link" href="${buildGoogleMapsUrl(alert.latitude, alert.longitude)}" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>`
+                : '<span class="text-muted">Coordinates not provided</span>';
+
+            const actions = Array.isArray(alert.actions) && alert.actions.length > 0
+                ? alert.actions.map((action) => `
+                    <li class="list-group-item incident-action-item">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div>
+                                <div class="fw-semibold">${escapeHtml(action.action_taken || 'Action recorded')}</div>
+                                <div class="small text-white-50">${escapeHtml(action.username || 'System')}${action.notes ? ` · ${escapeHtml(action.notes)}` : ''}</div>
+                            </div>
+                            <span class="small text-white-50 text-nowrap">${formatAlertTime(action.timestamp)}</span>
+                        </div>
+                    </li>
+                `).join('')
+                : '<li class="list-group-item incident-action-item text-white-50">No response actions recorded yet.</li>';
+
+            modalTitle.innerHTML = `<i class="fas fa-circle-info"></i> Incident Details${alert.location_label ? ` - ${escapeHtml(alert.location_label)}` : ''}`;
+            modalBody.innerHTML = `
+                <div class="incident-detail-grid">
+                    <div class="incident-detail-item">
+                        <span class="incident-detail-label">Alert ID</span>
+                        <div class="incident-detail-value">${escapeHtml(alert.id || '-')}</div>
+                    </div>
+                    <div class="incident-detail-item">
+                        <span class="incident-detail-label">Status</span>
+                        <div class="incident-detail-value">${escapeHtml(alert.status || '-')}</div>
+                    </div>
+                    <div class="incident-detail-item">
+                        <span class="incident-detail-label">Severity</span>
+                        <div class="incident-detail-value">${escapeHtml((alert.severity || '-').toString().toUpperCase())}</div>
+                    </div>
+                    <div class="incident-detail-item">
+                        <span class="incident-detail-label">Detected</span>
+                        <div class="incident-detail-value">${formatAlertTime(alert.detection_time)}</div>
+                    </div>
+                    <div class="incident-detail-item">
+                        <span class="incident-detail-label">Location</span>
+                        <div class="incident-detail-value">${escapeHtml(alert.location_label || 'Unknown')}</div>
+                    </div>
+                    <div class="incident-detail-item">
+                        <span class="incident-detail-label">Map</span>
+                        <div class="incident-detail-value">${mapLink}</div>
+                    </div>
+                    <div class="incident-detail-item">
+                        <span class="incident-detail-label">Latitude</span>
+                        <div class="incident-detail-value">${formatCoordinate(alert.latitude)}</div>
+                    </div>
+                    <div class="incident-detail-item">
+                        <span class="incident-detail-label">Longitude</span>
+                        <div class="incident-detail-value">${formatCoordinate(alert.longitude)}</div>
+                    </div>
+                    <div class="incident-detail-item">
+                        <span class="incident-detail-label">Prediction</span>
+                        <div class="incident-detail-value">${escapeHtml(alert.prediction_label || '-')}</div>
+                    </div>
+                    <div class="incident-detail-item">
+                        <span class="incident-detail-label">Confidence</span>
+                        <div class="incident-detail-value">${alert.confidence_score !== null && alert.confidence_score !== undefined ? `${(Number(alert.confidence_score) * 100).toFixed(2)}%` : '-'}</div>
+                    </div>
+                </div>
+
+                <div class="incident-detail-section">
+                    <h6 class="text-uppercase text-white-50 mb-2">Response Actions</h6>
+                    <ul class="list-group list-group-flush">${actions}</ul>
+                </div>
+
+                ${alert.image_snapshot ? `
+                    <div class="incident-detail-section">
+                        <h6 class="text-uppercase text-white-50 mb-2">Image Snapshot</h6>
+                        <div class="incident-detail-item">
+                            <div class="incident-detail-value">${escapeHtml(alert.image_snapshot)}</div>
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+
+            bootstrap.Modal.getOrCreateInstance(modalElement).show();
+        }
+
         function viewAlert(alertId) {
             fetch('/api/alerts/' + alertId)
                 .then((response) => {
@@ -2670,14 +2840,7 @@ def get_admin_template():
                 })
                 .then((payload) => {
                     const alert = payload.alert || {};
-                    const details = [
-                        `Alert ID: ${alert.id || '-'}`,
-                        `Status: ${alert.status || '-'}`,
-                        `Severity: ${alert.severity || '-'}`,
-                        `Location: ${alert.location_label || 'Unknown'}`,
-                        `Detected: ${formatAlertTime(alert.detection_time)}`,
-                    ];
-                    window.alert(details.join('\\n'));
+                    openIncidentDetailsModal(alert);
                 })
                 .catch((error) => {
                     console.error(error);
