@@ -4,7 +4,7 @@ from flask_cors import CORS
 from functools import wraps
 import os
 import json
-from datetime import datetime
+from datetime import datetime , timedelta
 
 # Try to import TensorFlow, but don't fail if it's not available
 try:
@@ -112,7 +112,7 @@ def create_app(config_name='development'):
             severity=severity_for_prediction(prediction.prediction_label, pred_result['confidence']),
             status='New',
             image_snapshot=prediction.image_path,
-            detection_time=datetime.utcnow()
+            detection_time=datetime.utcnow() + timedelta(hours=5, minutes=30)
         )
         db.session.add(alert)
         db.session.flush()
