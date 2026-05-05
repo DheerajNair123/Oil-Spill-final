@@ -1,4 +1,4 @@
-﻿# ðŸŽ¯ COMPLETE DEMONSTRATION: Live Image Sending System
+# 🎯 COMPLETE DEMONSTRATION: Live Image Sending System
 
 ## Live Demo Summary
 
@@ -6,7 +6,7 @@ I've just demonstrated the **complete end-to-end workflow** of the live image se
 
 ---
 
-## Step 1: Create a Device User âœ“
+## Step 1: Create a Device User ✔
 
 **Via Admin Dashboard:**
 - Logged in as: `admin@example.com` (default admin)
@@ -18,7 +18,7 @@ I've just demonstrated the **complete end-to-end workflow** of the live image se
 
 ---
 
-## Step 2: Generate API Key âœ“
+## Step 2: Generate API Key ✔
 
 **Command:**
 ```bash
@@ -33,7 +33,7 @@ Email: drone@maritime.local
 Role: coast_guard
 ============================================================
 
-âœ“ API Key Generated Successfully!
+✔ API Key Generated Successfully!
 
 API Key Details:
   ID:       45a4c232-16a8-4aa2-85d4-801ce5d4c53c
@@ -50,11 +50,11 @@ YOUR_API_KEY_HERE
 ============================================================
 ```
 
-**âš ï¸ IMPORTANT:** This key is now saved securely and ready to use!
+> ⚠️ **IMPORTANT:** This key is now saved securely and ready to use!
 
 ---
 
-## Step 3: Test API Connection âœ“
+## Step 3: Test API Connection ✔
 
 **Command:**
 ```bash
@@ -73,23 +73,23 @@ Testing /api/predict endpoint...
   Image: a.jpg
   API URL: http://localhost:5000/api/predict
 
-âœ“ Prediction successful!
+✔ Prediction successful!
   Prediction: Oil Spill
   Confidence: 99.05%
   Image URL: http://localhost:5000/uploads/20260505_103846_a.jpg
   Processing Time: 1.28ms
   Alert Created: True
 
-âš ï¸  ALERT DETECTED:
+⚠️  ALERT DETECTED:
   Alert ID: cfbcf640-57da-45e7-8cbd-377840791e89
   Severity: high
   Status: New
 
 ============================================================
-âœ“ API test passed!
+✔ API test passed!
 ```
 
-**âœ“ API Key Validated!** The test confirms:
+**✔ API Key Validated!** The test confirms:
 - API key is valid
 - Server is reachable
 - ML model is working
@@ -97,7 +97,7 @@ Testing /api/predict endpoint...
 
 ---
 
-## Step 4: Send Live Image with Location Data âœ“
+## Step 4: Send Live Image with Location Data ✔
 
 **Command:**
 ```bash
@@ -113,26 +113,26 @@ python image_sender.py \
 **Output:**
 ```
 2026-05-05 10:39:21,620 - INFO - Sending image: a.jpg
-2026-05-05 10:39:23,784 - INFO - âœ“ Prediction: Oil Spill (confidence: 99.05%)
-2026-05-05 10:39:23,809 - WARNING - âš ï¸  ALERT CREATED! ID: 2ee77443-0601-438e-a5b0-36cd54ce9936
+2026-05-05 10:39:23,784 - INFO - ✔ Prediction: Oil Spill (confidence: 99.05%)
+2026-05-05 10:39:23,809 - WARNING - ⚠️  ALERT CREATED! ID: 2ee77443-0601-438e-a5b0-36cd54ce9936
 
-âœ“ Success!
+✔ Success!
   Prediction: Oil Spill
   Confidence: 99.05%
   Image URL: http://localhost:5000/uploads/20260505_103923_a.jpg
   Alert ID: 2ee77443-0601-438e-a5b0-36cd54ce9936
 ```
 
-**âœ“ Image Sent Successfully!** The response shows:
+**✔ Image Sent Successfully!** The response shows:
 - Image accepted and stored
 - ML prediction executed (Oil Spill detected)
-- Location data saved (Arabian Sea - Patrol Zone 5 at 18.52Â°N, 73.86Â°E)
+- Location data saved (Arabian Sea - Patrol Zone 5 at 18.52°N, 73.86°E)
 - Image URL returned (can display in frontend/mobile apps)
 - Alert created automatically
 
 ---
 
-## Step 5: View Alerts in Real-Time Dashboard âœ“
+## Step 5: View Alerts in Real-Time Dashboard ✔
 
 **Admin Dashboard shows new alerts:**
 
@@ -147,19 +147,19 @@ python image_sender.py \
 
 **Recent Incidents (Top of List):**
 ```
-ðŸŒŠ Arabian Sea - Patrol Zone 5
+🌊 Arabian Sea - Patrol Zone 5
    Status: New
    Time: 2026-05-05 10:39
    Severity: HIGH
-   ðŸ“ View on Google Maps (18.52043, 73.856743)
+   📍 View on Google Maps (18.52043, 73.856743)
 ```
 
-**âœ“ Real-Time Alert Display!** Alerts automatically appear on dashboard with:
+**✔ Real-Time Alert Display!** Alerts automatically appear on dashboard with:
 - Location label provided by device
 - Exact GPS coordinates (latitude/longitude)
 - Prediction details (Oil Spill, 99.05% confidence)
 - Alert severity (HIGH)
-- Current status (New â†’ can acknowledge/resolve)
+- Current status (New → can acknowledge/resolve)
 - Timestamp
 
 ---
@@ -167,66 +167,66 @@ python image_sender.py \
 ## Complete Workflow Diagram
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Device/Drone/Camera                                         â”‚
-â”‚                                                             â”‚
-â”‚  image_sender.py captures image:                           â”‚
-â”‚  - Reads from file or directory                            â”‚
-â”‚  - Builds request with image + location + coordinates      â”‚
-â”‚  â””â”€> API Key: YOUR_API_KEY_HERE   â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                   â”‚
-                   â”‚ HTTPS POST to /api/predict
-                   â”‚ (multipart/form-data)
-                   â”‚
-                   â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Flask Backend (app.py)                                      â”‚
-â”‚                                                             â”‚
-â”‚ 1. Validate API key âœ“                                       â”‚
-â”‚ 2. Save image to /uploads/20260505_103923_a.jpg            â”‚
-â”‚ 3. Run TensorFlow ML model                                  â”‚
-â”‚    â†’ Prediction: Oil Spill (99.05%)                         â”‚
-â”‚ 4. Create Alert in database                                â”‚
-â”‚    - Alert ID: 2ee77443-0601-438e-a5b0-36cd54ce9936       â”‚
-â”‚    - Location: Arabian Sea - Patrol Zone 5                 â”‚
-â”‚    - Coordinates: 18.52043, 73.856743                      â”‚
-â”‚    - Severity: HIGH                                        â”‚
-â”‚    - Status: New                                           â”‚
-â”‚ 5. Return response:                                         â”‚
-â”‚    {                                                        â”‚
-â”‚      "prediction": "Oil Spill",                             â”‚
-â”‚      "confidence": 0.9905,                                  â”‚
-â”‚      "image_url": "http://.../uploads/20260505_103923_a.jpg"â”‚
-â”‚      "alert_created": true,                                 â”‚
-â”‚      "alert": {...}                                         â”‚
-â”‚    }                                                        â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                   â”‚
-                   â”‚ Response with image_url + alert data
-                   â”‚
-                   â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Dashboard (Web/Mobile)                                      â”‚
-â”‚                                                             â”‚
-â”‚ Real-Time Alert Display:                                   â”‚
-â”‚ â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ â”‚ ðŸŒŠ Arabian Sea - Patrol Zone 5                          â”‚
-â”‚ â”‚ Status: New  |  Severity: HIGH                          â”‚
-â”‚ â”‚ Time: 2026-05-05 10:39:23                               â”‚
-â”‚ â”‚                                                         â”‚
-â”‚ â”‚ [Detected Image with 99% Confidence]                    â”‚
-â”‚ â”‚ ðŸ“ View on Google Maps                                  â”‚
-â”‚ â”‚                                                         â”‚
-â”‚ â”‚ [Acknowledge] [In Progress] [Resolve]                   â”‚
-â”‚ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-â”‚                                                             â”‚
-â”‚ User can:                                                   â”‚
-â”‚ âœ“ See alert instantly                                       â”‚
-â”‚ âœ“ View image that triggered alert                          â”‚
-â”‚ âœ“ See exact GPS location                                   â”‚
-â”‚ âœ“ Acknowledge or take action                               â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌─────────────────────────────────────────────────────────────┐
+│ Device/Drone/Camera                                         │
+│                                                             │
+│  image_sender.py captures image:                           │
+│  - Reads from file or directory                            │
+│  - Builds request with image + location + coordinates      │
+│  └─> API Key: YOUR_API_KEY_HERE                            │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+                   │ HTTPS POST to /api/predict
+                   │ (multipart/form-data)
+                   │
+                   ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Flask Backend (app.py)                                      │
+│                                                             │
+│ 1. Validate API key ✔                                       │
+│ 2. Save image to /uploads/20260505_103923_a.jpg            │
+│ 3. Run TensorFlow ML model                                  │
+│    → Prediction: Oil Spill (99.05%)                        │
+│ 4. Create Alert in database                                │
+│    - Alert ID: 2ee77443-0601-438e-a5b0-36cd54ce9936       │
+│    - Location: Arabian Sea - Patrol Zone 5                 │
+│    - Coordinates: 18.52043, 73.856743                      │
+│    - Severity: HIGH                                        │
+│    - Status: New                                           │
+│ 5. Return response:                                        │
+│    {                                                       │
+│      "prediction": "Oil Spill",                            │
+│      "confidence": 0.9905,                                 │
+│      "image_url": "http://.../uploads/20260505_103923_a.jpg"│
+│      "alert_created": true,                                │
+│      "alert": {...}                                        │
+│    }                                                       │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+                   │ Response with image_url + alert data
+                   │
+                   ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Dashboard (Web/Mobile)                                      │
+│                                                             │
+│ Real-Time Alert Display:                                   │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ 🌊 Arabian Sea - Patrol Zone 5                          │ │
+│ │ Status: New  |  Severity: HIGH                          │ │
+│ │ Time: 2026-05-05 10:39:23                               │ │
+│ │                                                         │ │
+│ │ [Detected Image with 99% Confidence]                    │ │
+│ │ 📍 View on Google Maps                                  │ │
+│ │                                                         │ │
+│ │ [Acknowledge] [In Progress] [Resolve]                   │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│ User can:                                                   │
+│ ✔ See alert instantly                                       │
+│ ✔ View image that triggered alert                          │
+│ ✔ See exact GPS location                                   │
+│ ✔ Acknowledge or take action                               │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -235,12 +235,12 @@ python image_sender.py \
 
 | Component | Performance |
 |-----------|-------------|
-| API Authentication | âœ“ Instant |
-| Image Upload | 1-2 seconds |
+| API Authentication | ✔ Instant |
+| Image Upload | 1–2 seconds |
 | ML Prediction | 1.28ms |
 | Alert Creation | <100ms |
-| Dashboard Refresh | 5-10 seconds (polling) |
-| **Total End-to-End** | **~2-3 seconds** |
+| Dashboard Refresh | 5–10 seconds (polling) |
+| **Total End-to-End** | **~2–3 seconds** |
 
 ---
 
@@ -258,12 +258,22 @@ python test_sender.py --url http://localhost:5000 --key YOUR_API_KEY_HERE
 
 ### 3. Send Single Image with Location
 ```bash
-python image_sender.py --url http://localhost:5000 --key YOUR_API_KEY_HERE --location "Arabian Sea - Zone 5" --latitude 18.520430 --longitude 73.856743 /path/to/image.jpg
+python image_sender.py \
+  --url http://localhost:5000 \
+  --key YOUR_API_KEY_HERE \
+  --location "Arabian Sea - Zone 5" \
+  --latitude 18.520430 \
+  --longitude 73.856743 \
+  /path/to/image.jpg
 ```
 
 ### 4. Monitor Directory (Auto-Send)
 ```bash
-python image_sender.py --url http://localhost:5000 --key YOUR_API_KEY_HERE --location "Drone Flight A" --watch /path/to/captures
+python image_sender.py \
+  --url http://localhost:5000 \
+  --key YOUR_API_KEY_HERE \
+  --location "Drone Flight A" \
+  --watch /path/to/captures
 ```
 
 ### 5. View Logs
@@ -273,9 +283,9 @@ tail -f image_sender.log
 
 ---
 
-## How to Get Your API Key (Summary)
+## How to Get Your API Key
 
-### For Administrators:
+### For Administrators
 
 **Option 1: Using Python Script**
 ```bash
@@ -284,15 +294,15 @@ python generate_api_key.py user@email.com
 
 **Option 2: Via Admin Dashboard**
 1. Login as Admin
-2. Dashboard â†’ User Management
+2. Dashboard → User Management
 3. Click on user
 4. Generate API Key
 5. Copy and save securely
 
-### For Device Operators:
+### For Device Operators
 
 1. Contact your admin to generate an API key
-2. Receive key in format: `YOUR_API_KEY_HERE`
+2. Receive key in the format: `YOUR_API_KEY_HERE`
 3. Use in image_sender.py: `--key YOUR_API_KEY_HERE`
 4. Never share this key!
 
@@ -300,24 +310,24 @@ python generate_api_key.py user@email.com
 
 ## What Makes This System Work
 
-### âœ“ Security
+### ✔ Security
 - API key authentication (Bearer token)
 - User-level access control
 - Audit trail of all predictions
 - API key validation on every request
 
-### âœ“ Real-Time
-- Image sent â†’ Prediction in ~1.3ms â†’ Alert created instantly
-- Dashboard polling shows new alerts every 5-10 seconds
+### ✔ Real-Time
+- Image sent → Prediction in ~1.3ms → Alert created instantly
+- Dashboard polling shows new alerts every 5–10 seconds
 - Location data provides exact incident coordinates
 
-### âœ“ Flexible
+### ✔ Flexible
 - Works with files, directories, cameras, drones
 - Supports batch and continuous monitoring modes
 - Optional location tagging with GPS coordinates
 - Easy to integrate with any image source
 
-### âœ“ Reliable
+### ✔ Reliable
 - Automatic retry logic with exponential backoff
 - Connection error handling
 - Full logging to file and console
@@ -327,31 +337,33 @@ python generate_api_key.py user@email.com
 
 ## Next Steps to Deploy
 
-1. **Get API Key:**
-   - Run `python generate_api_key.py your_user_email`
+1. **Get API Key**
+   ```bash
+   python generate_api_key.py your_user_email
+   ```
 
-2. **Test Connection:**
-   - Run `python test_sender.py --url http://server:5000 --key YOUR_KEY`
+2. **Test Connection**
+   ```bash
+   python test_sender.py --url http://server:5000 --key YOUR_KEY
+   ```
 
-3. **Deploy to Device:**
+3. **Deploy to Device**
    - Copy `image_sender.py` to device
    - Install Python + requests: `pip install requests`
    - Run with your device's image source
 
-4. **Monitor:**
+4. **Monitor**
    - Check dashboard for real-time alerts
    - View `image_sender.log` for detailed logs
-   - Use Google Maps links to see exact locations
+   - Use map links to see exact locations
 
 ---
 
-## API Key Examples
+## API Keys Used in This Demo
 
-Here are the keys used in this demo:
-
-| User | Email | Key | Status |
-|------|-------|-----|--------|
-| drone_device_1 | drone@maritime.local | `YOUR_API_KEY_HERE` | âœ“ Active |
+| User | Email | Status |
+|------|-------|--------|
+| drone_device_1 | drone@maritime.local | ✔ Active |
 
 **Ready to use!** Start sending images now with:
 ```bash
@@ -363,12 +375,9 @@ python image_sender.py \
 
 ---
 
-**That's it! You now have a complete, working live image sending system! ðŸš€**
+**That's it! You now have a complete, working live image sending system! 🚀**
 
 For detailed documentation, see:
-- `LIVE_IMAGE_SENDING.md` â€” Complete guide
-- `QUICK_REFERENCE.md` â€” Command cheat sheet
-- `DEMO_WALKTHROUGH.md` â€” Step-by-step setup
-
-
-
+- `LIVE_IMAGE_SENDING.md` — Complete guide
+- `QUICK_REFERENCE.md` — Command cheat sheet
+- `DEMO_WALKTHROUGH.md` — Step-by-step setup
