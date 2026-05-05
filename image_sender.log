@@ -1,0 +1,29 @@
+2026-05-05 10:39:21,620 - INFO - Sending image: a.jpg
+2026-05-05 11:37:55,723 - ERROR - Directory not found: \IMAGES\oil_spill
+2026-05-05 11:38:01,901 - INFO - Monitoring directory: IMAGES\oil_spill
+2026-05-05 11:38:01,901 - INFO - Poll interval: 5s, extensions: ('.jpg', '.jpeg', '.png', '.bmp')
+2026-05-05 11:38:01,903 - INFO - Sending image: a.jpg
+2026-05-05 11:38:03,984 - ERROR - Error sending image: 401 Client Error: UNAUTHORIZED for url: http://localhost:5000/api/predict
+2026-05-05 11:38:04,986 - INFO - Sending image: b.jpg
+2026-05-05 11:38:07,038 - ERROR - Error sending image: 401 Client Error: UNAUTHORIZED for url: http://localhost:5000/api/predict
+2026-05-05 11:38:57,626 - INFO - Stopped by user
+2026-05-05 11:38:59,140 - INFO - Monitoring directory: IMAGES\oil_spill
+2026-05-05 11:38:59,140 - INFO - Poll interval: 5s, extensions: ('.jpg', '.jpeg', '.png', '.bmp')
+2026-05-05 11:38:59,142 - INFO - Sending image: a.jpg
+2026-05-05 11:39:02,909 - INFO - Sending image: b.jpg
+2026-05-05 11:41:28,447 - INFO - Sending image: a.jpg
+2026-05-05 11:41:32,206 - INFO - Prediction: Oil Spill (confidence: 99.05%)
+2026-05-05 11:41:32,206 - WARNING - ALERT CREATED! ID: 3a0821bf-7453-45a1-a379-ace08e287ffc
+2026-05-05 11:41:44,800 - INFO - Stopped by user
+2026-05-05 11:41:46,869 - INFO - Monitoring directory: IMAGES\oil_spill
+2026-05-05 11:41:46,869 - INFO - Poll interval: 5s, extensions: ('.jpg', '.jpeg', '.png', '.bmp')
+2026-05-05 11:41:46,871 - INFO - Sending image: a.jpg
+2026-05-05 11:41:49,104 - INFO - Prediction: Oil Spill (confidence: 99.05%)
+2026-05-05 11:41:49,104 - WARNING - ALERT CREATED! ID: 0b8c150e-7f02-4d77-bfbf-da1aa35db36e
+2026-05-05 11:41:50,105 - INFO - Sending image: b.jpg
+2026-05-05 11:41:52,295 - INFO - Prediction: Oil Spill (confidence: 99.42%)
+2026-05-05 11:41:52,295 - WARNING - ALERT CREATED! ID: dab71e1c-3e65-4992-adda-dda2281933f1
+2026-05-05 11:44:18,361 - INFO - Sending image: d.jpg
+2026-05-05 11:44:21,741 - INFO - Prediction: Oil Spill (confidence: 98.80%)
+2026-05-05 11:44:21,741 - WARNING - ALERT CREATED! ID: 6825c886-109b-4eb9-a1b4-59d48f7308fe
+2026-05-05 11:44:33,559 - INFO - Stopped by user

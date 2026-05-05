@@ -1,39 +1,39 @@
-# 🌊 Oil Spill Detection System - Complete Project
+﻿# ðŸŒŠ Oil Spill Detection System - Complete Project
 
 A comprehensive, production-ready oil spill detection system with machine learning, user authentication, analytics dashboard, and RESTful API.
 
-## 📋 Features
+## ðŸ“‹ Features
 
-### Phase 1: Core Features ✅
-- ✓ User authentication & registration with role-based access
-- ✓ SQLAlchemy database integration with multiple models
-- ✓ Prediction system with confidence scoring
-- ✓ User feedback mechanism for model improvement
-- ✓ Comprehensive analytics dashboard with charts
-- ✓ Prediction history with pagination
-- ✓ User profiles with statistics
+### Phase 1: Core Features âœ…
+- âœ“ User authentication & registration with role-based access
+- âœ“ SQLAlchemy database integration with multiple models
+- âœ“ Prediction system with confidence scoring
+- âœ“ User feedback mechanism for model improvement
+- âœ“ Comprehensive analytics dashboard with charts
+- âœ“ Prediction history with pagination
+- âœ“ User profiles with statistics
 
-### Phase 2: Advanced Features 🚧
-- 🔄 REST API with Swagger documentation
-- 🔄 Image preprocessing (contrast enhancement, denoising)
-- 🔄 Batch image processing
-- 🔄 Admin panel with user management
-- 🔄 API key management for programmatic access
-- 🔄 Audit logging for security
+### Phase 2: Advanced Features ðŸš§
+- ðŸ”„ REST API with Swagger documentation
+- ðŸ”„ Image preprocessing (contrast enhancement, denoising)
+- ðŸ”„ Batch image processing
+- ðŸ”„ Admin panel with user management
+- ðŸ”„ API key management for programmatic access
+- ðŸ”„ Audit logging for security
 
 ### Phase 3: ML & Optimization
-- ⭕ Grad-CAM model explainability
-- ⭕ Fine-tuning with user feedback
-- ⭕ Performance monitoring & alerts
-- ⭕ Model versioning
+- â­• Grad-CAM model explainability
+- â­• Fine-tuning with user feedback
+- â­• Performance monitoring & alerts
+- â­• Model versioning
 
 ### Phase 4: Production Deployment
-- ⭕ Docker containerization
-- ⭕ CI/CD pipeline (GitHub Actions)
-- ⭕ Cloud deployment (AWS/Google Cloud)
-- ⭕ Comprehensive test suite
+- â­• Docker containerization
+- â­• CI/CD pipeline (GitHub Actions)
+- â­• Cloud deployment (AWS/Google Cloud)
+- â­• Comprehensive test suite
 
-## 🚀 Quick Start
+## ðŸš€ Quick Start
 
 ### Prerequisites
 - Python 3.8+
@@ -76,26 +76,26 @@ A comprehensive, production-ready oil spill detection system with machine learni
    - API Docs: http://localhost:5000/apidocs/
    - Admin Panel: http://localhost:5000/admin
 
-## 📁 Project Structure
+## ðŸ“ Project Structure
 
 ```
 MPTRIAL/
-├── app.py                  # Main Flask application
-├── models.py               # SQLAlchemy models
-├── config.py               # Configuration management
-├── forms.py                # WTForms for validation
-├── utils.py                # Utility functions & services
-├── run.py                  # Application runner
-├── init_db.py              # Database initialization
-├── test_app.py             # Unit & integration tests
-├── requirements.txt        # Python dependencies
-├── model.h5                # Pre-trained ML model
-├── uploads/                # Uploaded images
-├── static/                 # Static files
-└── README.md               # This file
+â”œâ”€â”€ app.py                  # Main Flask application
+â”œâ”€â”€ models.py               # SQLAlchemy models
+â”œâ”€â”€ config.py               # Configuration management
+â”œâ”€â”€ forms.py                # WTForms for validation
+â”œâ”€â”€ utils.py                # Utility functions & services
+â”œâ”€â”€ run.py                  # Application runner
+â”œâ”€â”€ init_db.py              # Database initialization
+â”œâ”€â”€ test_app.py             # Unit & integration tests
+â”œâ”€â”€ requirements.txt        # Python dependencies
+â”œâ”€â”€ model.h5                # Pre-trained ML model
+â”œâ”€â”€ uploads/                # Uploaded images
+â”œâ”€â”€ static/                 # Static files
+â””â”€â”€ README.md               # This file
 ```
 
-## 🔐 User Roles
+## ðŸ” User Roles
 
 | Role | Permissions |
 |------|------------|
@@ -103,7 +103,7 @@ MPTRIAL/
 | **User** | Make predictions, view history, manage profile |
 | **Supervisor** | View all predictions, system statistics |
 
-## 🔌 API Endpoints
+## ðŸ”Œ API Endpoints
 
 ### Authentication
 - `POST /register` - User registration
@@ -128,7 +128,7 @@ MPTRIAL/
 ### API (Programmatic)
 - `POST /api/predict` - API prediction endpoint (requires Bearer token)
 
-## 📊 Database Models
+## ðŸ“Š Database Models
 
 ### User
 - Username, email, password hash
@@ -155,7 +155,7 @@ MPTRIAL/
 - Performance statistics
 - Accuracy tracking
 
-## 🎯 Configuration
+## ðŸŽ¯ Configuration
 
 Environment variables (create `.env` file):
 ```env
@@ -166,14 +166,14 @@ UPLOAD_FOLDER=uploads
 MAX_CONTENT_LENGTH=16777216
 ```
 
-## 🧪 Testing
+## ðŸ§ª Testing
 
 Run unit and integration tests:
 ```bash
 pytest test_app.py -v
 ```
 
-## 📈 Usage Examples
+## ðŸ“ˆ Usage Examples
 
 ### Registration & Login
 1. Visit http://localhost:5000/register
@@ -211,17 +211,17 @@ print(f"Prediction: {result['prediction']}")
 print(f"Confidence: {result['confidence']}")
 ```
 
-## 🔒 Security Features
+## ðŸ”’ Security Features
 
-- ✓ Password hashing with Werkzeug
-- ✓ CSRF protection with Flask-WTF
-- ✓ SQL injection prevention with ORM
-- ✓ Session management
-- ✓ API key authentication
-- ✓ Audit logging
-- ✓ Role-based access control
+- âœ“ Password hashing with Werkzeug
+- âœ“ CSRF protection with Flask-WTF
+- âœ“ SQL injection prevention with ORM
+- âœ“ Session management
+- âœ“ API key authentication
+- âœ“ Audit logging
+- âœ“ Role-based access control
 
-## 📚 Additional Resources
+## ðŸ“š Additional Resources
 
 ### Model Explainability (Phase 3)
 - Grad-CAM visualizations
@@ -238,7 +238,7 @@ print(f"Confidence: {result['confidence']}")
 - Performance trends
 - Model comparison
 
-## 🐛 Troubleshooting
+## ðŸ› Troubleshooting
 
 ### Model Loading Error
 ```
@@ -258,7 +258,7 @@ OSError: [Errno 48] Address already in use
 ```
 Solution: Change port in `run.py` or kill process using port 5000.
 
-## 🚀 Deployment
+## ðŸš€ Deployment
 
 ### Docker Deployment
 ```bash
@@ -278,22 +278,22 @@ git push heroku main
 heroku run python init_db.py
 ```
 
-## 📝 Development Roadmap
+## ðŸ“ Development Roadmap
 
 - [x] Phase 1: Core features (users, predictions, analytics)
 - [ ] Phase 2: API, batch processing, admin panel
 - [ ] Phase 3: Model explainability, fine-tuning, monitoring
 - [ ] Phase 4: Docker, CI/CD, cloud deployment
 
-## 📄 License
+## ðŸ“„ License
 
 This project is created for educational purposes.
 
-## 👥 Contributors
+## ðŸ‘¥ Contributors
 
 - Dheeraj (Project Lead & Developer)
 
-## 📧 Support
+## ðŸ“§ Support
 
 For issues and feature requests, create a GitHub issue or contact the development team.
 
@@ -301,3 +301,4 @@ For issues and feature requests, create a GitHub issue or contact the developmen
 
 **Last Updated**: April 21, 2026
 **Status**: Production Ready (Phase 1) | In Development (Phases 2-4)
+

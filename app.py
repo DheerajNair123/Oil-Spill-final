@@ -693,6 +693,7 @@ def create_app(config_name='development'):
                     'prediction': prediction.prediction_label,
                     'confidence': prediction.confidence_score,
                     'processing_time': prediction.processing_time,
+                    'image_url': url_for('uploaded_file', filename=filename, _external=True),
                     'alert_created': alert is not None,
                     'alert': serialize_alert(alert) if alert else None
                 })

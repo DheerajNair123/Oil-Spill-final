@@ -1,0 +1,8 @@
+﻿# Sensitive/local-only files
+Pass/email and pass.txt
+instance/oil_spill.db
+
+# Common local artifacts
+__pycache__/
+*.pyc
+uploads/
